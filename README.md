@@ -50,11 +50,12 @@
 
 ### 2. 安装依赖并启动
 ```bash
-# 1. 安装依赖包
-npm install
-
-# 2. 启动服务
+# 一条命令即可：npm start 会自动安装依赖，然后启动服务
 npm start
+
+# 手动分步执行（效果相同）
+npm install   # 安装依赖包
+node server.js
 
 # 或开发模式（热重载）
 npm run dev

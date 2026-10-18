@@ -1,9 +1,13 @@
 {
-  "name": "workspace",
-  "version": "1.0.0",
-  "description": "",
+  "name": "icp-site",
+  "version": "1.1.0",
+  "description": "ICP备案核验网站系统 - 前台展示 + /admin 后台管理 + JWT登录 + 5套主题",
   "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
+    "prestart": "npm install --no-audit --no-fund --loglevel=error",
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
