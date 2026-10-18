@@ -1,0 +1,39 @@
+{
+  "title": "ICP备案核验平台",
+  "icon": "",
+  "logoText": "备案",
+  "theme": "blue",
+  "content": "欢迎访问本网站。本页面用于展示ICP备案信息核验结果，供公众查询与监督。\n\n本单位已依法向工业和信息化部履行ICP备案手续，备案号如下：\n- ICP备案号：京ICP备12345678号\n- 公安备案号：京公安备12345678号",
+  "images": [],
+  "footer": {
+    "text": "Copyright © 2026 我的网站 版权所有",
+    "links": [
+      {
+        "label": "ICP备案",
+        "url": "https://beian.miit.gov.cn/"
+      },
+      {
+        "label": "公安备案",
+        "url": "https://www.beian.gov.cn/"
+      },
+      {
+        "label": "关于我们",
+        "url": "https://example.com/about"
+      },
+      {
+        "label": "联系我们",
+        "url": "https://example.com/contact"
+      }
+    ]
+  },
+  "icp": {
+    "number": "京ICP备12345678号",
+    "url": "https://beian.miit.gov.cn/"
+  },
+  "ga": {
+    "number": "京公安备12345678号",
+    "url": "https://www.beian.gov.cn/"
+  },
+  "createdAt": "2026-10-17T12:00:00.000Z",
+  "updatedAt": "2026-10-17T06:20:52.826Z"
+}

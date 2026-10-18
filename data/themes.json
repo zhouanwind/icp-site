@@ -1,0 +1,70 @@
+{
+  "themes": {
+    "blue": {
+      "name": "商务蓝",
+      "primary": "#1890ff",
+      "primaryDark": "#1372d6",
+      "bg": "#f0f6ff",
+      "cardBg": "#ffffff",
+      "text": "#1f2937",
+      "textMuted": "#6b7280",
+      "border": "#d9e2ff",
+      "footerBg": "#0b1f3a",
+      "footerText": "#cbd5e1",
+      "headerBg": "#ffffff"
+    },
+    "dark": {
+      "name": "暗黑科技",
+      "primary": "#6366f1",
+      "primaryDark": "#4f46e5",
+      "bg": "#0f172a",
+      "cardBg": "#1e293b",
+      "text": "#e2e8f0",
+      "textMuted": "#94a3b8",
+      "border": "#334155",
+      "footerBg": "#020617",
+      "footerText": "#94a3b8",
+      "headerBg": "#1e293b"
+    },
+    "green": {
+      "name": "自然绿",
+      "primary": "#16a34a",
+      "primaryDark": "#15803d",
+      "bg": "#f0fdf4",
+      "cardBg": "#ffffff",
+      "text": "#14532d",
+      "textMuted": "#4b5563",
+      "border": "#bbf7d0",
+      "footerBg": "#064e3b",
+      "footerText": "#a7f3d0",
+      "headerBg": "#ffffff"
+    },
+    "orange": {
+      "name": "活力橙",
+      "primary": "#f59e0b",
+      "primaryDark": "#d97706",
+      "bg": "#fffbeb",
+      "cardBg": "#ffffff",
+      "text": "#78350f",
+      "textMuted": "#6b7280",
+      "border": "#fde68a",
+      "footerBg": "#451a03",
+      "footerText": "#fcd34d",
+      "headerBg": "#ffffff"
+    },
+    "purple": {
+      "name": "优雅紫",
+      "primary": "#9333ea",
+      "primaryDark": "#7e22ce",
+      "bg": "#faf5ff",
+      "cardBg": "#ffffff",
+      "text": "#4c1d95",
+      "textMuted": "#6b7280",
+      "border": "#e9d5ff",
+      "footerBg": "#3b0764",
+      "footerText": "#d8b4fe",
+      "headerBg": "#ffffff"
+    }
+  },
+  "defaultTheme": "blue"
+}

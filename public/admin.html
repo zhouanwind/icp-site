@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>网站管理后台</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+<style>
+@font-face {
+  font-family: 'Noto Sans SC';
+  src: url('/fonts/noto-sans-sc.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans SC';
+  src: url('/fonts/noto-sans-sc.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+:root{
+  --primary:#4f46e5;--primary-dark:#4338ca;
+  --bg:#f1f5f9;--card:#fff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+  --ok:#16a34a;--err:#dc2626;--radius:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.05);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:var(--primary);text-decoration:none}
+
+/* ========== 登录页 ========== */
+#loginView{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#2563eb 100%);padding:20px}
+.login-card{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:40px 36px;width:100%;max-width:380px}
+.login-logo{width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,var(--primary),#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 18px}
+.login-card h1{font-size:20px;text-align:center;margin-bottom:6px}
+.login-card .sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:26px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.field input,.field textarea,.field select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;outline:none;transition:border .2s,box-shadow .2s;font-family:inherit;color:var(--text);background:#fff}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.12)}
+.field textarea{resize:vertical;min-height:120px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 22px;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;width:100%}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 4px 14px rgba(79,70,229,.35)}
+.btn-sm{padding:7px 14px;font-size:13px;width:auto}
+.btn-outline{background:#fff;border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.btn-danger{background:#fee2e2;color:var(--err);border:1.5px solid #fecaca}
+.btn-danger:hover{background:var(--err);color:#fff}
+.msg{padding:10px 14px;border-radius:9px;font-size:13px;margin-bottom:14px;display:none}
+.msg.err{display:block;background:#fee2e2;color:var(--err)}
+.msg.ok{display:block;background:#dcfce7;color:var(--ok)}
+.login-hint{margin-top:18px;text-align:center;font-size:12px;color:var(--muted);background:var(--bg);padding:10px;border-radius:8px}
+
+/* ========== 主布局 ========== */
+#appView{display:none}
+.topbar{background:#fff;box-shadow:var(--shadow);position:sticky;top:0;z-index:50}
+.topbar-inner{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:14px}
+.topbar .logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--primary),#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;flex:none}
+.topbar h1{font-size:17px;flex:1}
+.topbar .user{font-size:13px;color:var(--muted)}
+.layout{max-width:1200px;margin:0 auto;padding:22px 20px;display:flex;gap:20px;align-items:flex-start}
+.side{width:210px;flex:none;position:sticky;top:76px;display:flex;flex-direction:column;gap:6px}
+.side a{padding:11px 16px;border-radius:10px;font-size:14px;color:var(--text);display:flex;align-items:center;gap:10px;transition:all .15s}
+.side a:hover{background:#e0e7ff;color:var(--primary)}
+.side a.active{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 4px 12px rgba(79,70,229,.3)}
+.content{flex:1;min-width:0}
+.panel{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:20px;display:none}
+.panel.active{display:block}
+.panel h2{font-size:17px;margin-bottom:4px}
+.panel .desc{font-size:13px;color:var(--muted);margin-bottom:20px}
+.row{display:flex;gap:16px;flex-wrap:wrap}
+.row .field{flex:1;min-width:200px}
+
+/* 主题选择 */
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.theme-opt{border:2px solid var(--border);border-radius:12px;padding:16px 14px;cursor:pointer;text-align:center;transition:all .2s;background:#fff;position:relative}
+.theme-opt:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.theme-opt.active{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+.theme-opt.active::after{content:"✓ 使用中";position:absolute;top:8px;right:8px;font-size:11px;color:var(--primary);font-weight:700}
+.theme-swatch{height:56px;border-radius:8px;margin-bottom:10px;position:relative;overflow:hidden}
+.theme-swatch::after{content:"";position:absolute;left:8px;top:8px;width:34%;height:12px;border-radius:4px;background:rgba(255,255,255,.5)}
+.theme-swatch::before{content:"";position:absolute;left:8px;bottom:8px;width:55%;height:10px;border-radius:4px;background:rgba(255,255,255,.35)}
+.theme-opt .tname{font-size:14px;font-weight:600}
+
+/* 图片管理 */
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.img-item{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow)}
+.img-item img{width:100%;height:110px;object-fit:cover;display:block}
+.img-item .del{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;background:rgba(220,38,38,.92);color:#fff;border:none;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center}
+.img-item .del:hover{background:var(--err)}
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:28px;text-align:center;cursor:pointer;color:var(--muted);transition:all .2s;margin-top:14px}
+.upload-zone:hover{border-color:var(--primary);background:#eef2ff;color:var(--primary)}
+.upload-zone .up-icon{font-size:30px;margin-bottom:6px}
+
+/* 页脚链接 */
+.link-row{display:flex;gap:10px;margin-bottom:10px}
+.link-row input{flex:1}
+.link-row .btn-danger{flex:none}
+.empty{color:var(--muted);font-size:13px;text-align:center;padding:14px}
+
+/* 预览 */
+.preview-note{background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;border-radius:9px;padding:10px 14px;font-size:13px;margin-bottom:18px}
+.toolbar{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+.save-status{font-size:13px;color:var(--muted);align-self:center}
+
+/* 前台预览小窗 */
+.mini-preview{width:100%;height:420px;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff}
+.mini-preview iframe{width:100%;height:100%;border:none}
+
+@media (max-width:860px){
+  .layout{flex-direction:column}
+  .side{width:100%;position:static;flex-direction:row;overflow-x:auto;padding-bottom:6px}
+  .side a{white-space:nowrap;padding:9px 14px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 登录视图 ============ -->
+<div id="loginView">
+  <div class="login-card">
+    <div class="login-logo">⚙️</div>
+    <h1>网站管理后台</h1>
+    <div class="sub">ICP备案核验网站 · 设置中心</div>
+    <div class="msg" id="loginMsg"></div>
+    <form id="loginForm">
+      <div class="field">
+        <label>用户名</label>
+        <input type="text" id="loginUser" autocomplete="username" required placeholder="请输入用户名">
+      </div>
+      <div class="field">
+        <label>密码</label>
+        <input type="password" id="loginPass" autocomplete="current-password" required placeholder="请输入密码">
+      </div>
+      <button type="submit" class="btn btn-primary">登 录</button>
+    </form>
+    <div class="login-hint">默认账号：<b>admin</b>　默认密码：<b>admin123</b><br>（首次登录后建议在「安全设置」中修改密码）</div>
+  </div>
+</div>
+
+<!-- ============ 主视图 ============ -->
+<div id="appView">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="logo">⚙️</div>
+      <h1>网站管理后台</h1>
+      <span class="user" id="userName"></span>
+      <a class="btn btn-outline btn-sm" href="/" target="_blank">查看前台 ↗</a>
+      <button class="btn btn-outline btn-sm" id="logoutBtn">退出登录</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <nav class="side" id="sideNav">
+      <a href="#basic" data-panel="basic">📝 基本设置</a>
+      <a href="#content" data-panel="content">📄 正文内容</a>
+      <a href="#images" data-panel="images">🖼️ 图片管理</a>
+      <a href="#footer" data-panel="footer">🔗 页脚与超链接</a>
+      <a href="#filing" data-panel="filing">✅ 备案信息</a>
+      <a href="#theme" data-panel="theme">🎨 主题设置</a>
+      <a href="#preview" data-panel="preview">👁️ 实时预览</a>
+      <a href="#security" data-panel="security">🔒 安全设置</a>
+    </nav>
+
+    <div class="content">
+
+      <!-- 基本设置 -->
+      <section class="panel" id="panel-basic">
+        <h2>基本设置</h2>
+        <p class="desc">设置网站标题（Title）、图标和 Logo 文字。</p>
+        <div class="row">
+          <div class="field">
+            <label>网站标题（Title）</label>
+            <input type="text" id="f-title" maxlength="60" placeholder="如：ICP备案核验平台">
+          </div>
+          <div class="field" style="max-width:160px">
+            <label>Logo 文字（无图标时显示）</label>
+            <input type="text" id="f-logoText" maxlength="4" placeholder="备">
+          </div>
+        </div>
+        <div class="field">
+          <label>网站图标（URL 或上传）</label>
+          <div class="row" style="align-items:flex-end">
+            <div style="flex:1">
+              <input type="text" id="f-icon" placeholder="https://... 图标地址，或点击下方按钮上传">
+            </div>
+            <button class="btn btn-outline btn-sm" id="iconUploadBtn">📤 上传图标</button>
+            <input type="file" id="iconFile" accept="image/*" style="display:none">
+          </div>
+        </div>
+        <div class="toolbar">
+          <span class="save-status" id="st-basic"></span>
+          <button class="btn btn-primary btn-sm" onclick="saveSection('basic')">💾 保存设置</button>
+        </div>
+      </section>
+
+      <!-- 正文内容 -->
+      <section class="panel" id="panel-content">
+        <h2>正文内容</h2>
+        <p class="desc">编辑前台「网站信息」区域的正文。空行表示分段，单换行会保留为换行。</p>
+        <div class="field">
+          <textarea id="f-content" rows="12" placeholder="输入正文内容…"></textarea>
+        </div>
+        <div class="toolbar">
+          <span class="save-status" id="st-content"></span>
+          <button class="btn btn-primary btn-sm" onclick="saveSection('content')">💾 保存设置</button>
+        </div>
+      </section>
+
+      <!-- 图片管理 -->
+      <section class="panel" id="panel-images">
+        <h2>图片管理</h2>
+        <p class="desc">上传的图片将展示在前台「图片展示」区域（单张最大 5MB，支持 png/jpg/gif/webp/svg）。</p>
+        <div class="img-grid" id="imgGrid"></div>
+        <div class="upload-zone" id="imgUploadZone">
+          <div class="up-icon">🖼️</div>
+          <div>点击此处或拖拽图片到此处上传</div>
+          <div style="font-size:12px;margin-top:4px">上传后可在前台查看展示效果</div>
+        </div>
+        <input type="file" id="imgFile" accept="image/*" multiple style="display:none">
+        <div class="toolbar">
+          <span class="save-status" id="st-images"></span>
+          <button class="btn btn-primary btn-sm" onclick="saveSection('images')">💾 保存图片列表</button>
+        </div>
+      </section>
+
+      <!-- 页脚与超链接 -->
+      <section class="panel" id="panel-footer">
+        <h2>页脚与超链接</h2>
+        <p class="desc">设置页脚文字（版权信息）以及页脚中的超链接。</p>
+        <div class="field">
+          <label>页脚文字（版权 / 落款）</label>
+          <input type="text" id="f-footerText" maxlength="120" placeholder="Copyright © 2026 我的网站 版权所有">
+        </div>
+        <label style="font-size:13px;color:var(--muted);display:block;margin:14px 0 8px">页脚超链接列表</label>
+        <div id="linkList"></div>
+        <button class="btn btn-outline btn-sm" id="addLinkBtn">＋ 添加链接</button>
+        <div class="toolbar">
+          <span class="save-status" id="st-footer"></span>
+          <button class="btn btn-primary btn-sm" onclick="saveSection('footer')">💾 保存设置</button>
+        </div>
+      </section>
+
+      <!-- 备案信息 -->
+      <section class="panel" id="panel-filing">
+        <h2>备案信息</h2>
+        <p class="desc">填写 ICP 备案号与公安备案号，将展示在前台备案卡片并链接到官方查询页。</p>
+        <div class="field">
+          <label>ICP 备案号</label>
+          <input type="text" id="f-icpNum" placeholder="如：京ICP备12345678号">
+        </div>
+        <div class="field">
+          <label>ICP 备案查询链接</label>
+          <input type="text" id="f-icpUrl" placeholder="https://beian.miit.gov.cn/">
+        </div>
+        <div class="field">
+          <label>公安备案号（留空则前台不显示）</label>
+          <input type="text" id="f-gaNum" placeholder="如：京公网安备11010802012345号">
+        </div>
+        <div class="field">
+          <label>公安备案查询链接</label>
+          <input type="text" id="f-gaUrl" placeholder="https://www.beian.gov.cn/">
+        </div>
+        <div class="toolbar">
+          <span class="save-status" id="st-filing"></span>
+          <button class="btn btn-primary btn-sm" onclick="saveSection('filing')">💾 保存设置</button>
+        </div>
+      </section>
+
+      <!-- 主题设置 -->
+      <section class="panel" id="panel-theme">
+        <h2>主题设置</h2>
+        <p class="desc">内置 5 套常用主题，点击即可切换并自动保存。</p>
+        <div class="theme-grid" id="themeGrid"></div>
+      </section>
+
+      <!-- 实时预览 -->
+      <section class="panel" id="panel-preview">
+        <h2>实时预览</h2>
+        <p class="desc">预览修改保存后的前台实际效果。</p>
+        <div class="preview-note">💡 请先在各设置页点击「保存」，然后点击下方按钮刷新预览。</div>
+        <button class="btn btn-primary btn-sm" id="previewBtn">🔄 刷新预览</button>
+        <div style="height:14px"></div>
+        <div class="mini-preview"><iframe id="previewFrame" src="/?t=0"></iframe></div>
+      </section>
+
+      <!-- 安全设置 -->
+      <section class="panel" id="panel-security">
+        <h2>安全设置</h2>
+        <p class="desc">修改当前账号的登录密码。</p>
+        <form id="passForm" style="max-width:420px">
+          <div class="msg" id="passMsg"></div>
+          <div class="field">
+            <label>原密码</label>
+            <input type="password" id="oldPass" required autocomplete="current-password">
+          </div>
+          <div class="field">
+            <label>新密码（至少 6 位）</label>
+            <input type="password" id="newPass" required minlength="6" autocomplete="new-password">
+          </div>
+          <div class="field">
+            <label>确认新密码</label>
+            <input type="password" id="newPass2" required autocomplete="new-password">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:auto;padding:11px 34px">🔒 修改密码</button>
+        </form>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= 全局状态 ================= */
+let TOKEN = localStorage.getItem('site_token') || '';
+let cfg = {};          // 当前配置
+let themes = {};       // 主题表
+let imageUrls = [];    // 待保存的图片列表
+
+const $ = (id) => document.getElementById(id);
+
+/* ================= API ================= */
+async function api(path, opts = {}) {
+  opts.headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
+  if (TOKEN) opts.headers['Authorization'] = 'Bearer ' + TOKEN;
+  const res = await fetch(path, opts);
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 401) { logout(); throw new Error(data.error || '未授权'); }
+  if (!res.ok) throw new Error(data.error || '请求失败');
+  return data;
+}
+
+/* ================= 视图切换 ================= */
+function showApp() {
+  $('loginView').style.display = 'none';
+  $('appView').style.display = 'block';
+  $('userName').textContent = '👤 ' + (localStorage.getItem('site_user') || '');
+}
+function logout() {
+  TOKEN = '';
+  localStorage.removeItem('site_token');
+  localStorage.removeItem('site_user');
+  $('appView').style.display = 'none';
+  $('loginView').style.display = 'flex';
+}
+
+/* ================= 登录 ================= */
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = $('loginMsg');
+  msg.className = 'msg';
+  try {
+    const d = await api('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ username: $('loginUser').value.trim(), password: $('loginPass').value }),
+    });
+    TOKEN = d.token;
+    localStorage.setItem('site_token', TOKEN);
+    localStorage.setItem('site_user', d.username);
+    await loadAll();
+    showApp();
+  } catch (err) {
+    msg.className = 'msg err';
+    msg.textContent = err.message;
+  }
+});
+
+$('logoutBtn').addEventListener('click', logout);
+
+/* ================= 加载数据 ================= */
+async function loadAll() {
+  const [c, t] = await Promise.all([api('/api/config'), api('/api/themes')]);
+  cfg = c;
+  themes = t.themes || {};
+  imageUrls = c.images || [];
+  fillForms();
+  renderImages();
+  renderLinks();
+  renderThemes();
+  switchPanel(location.hash.slice(1) || 'basic');
+}
+
+function fillForms() {
+  $('f-title').value = cfg.title || '';
+  $('f-logoText').value = cfg.logoText || '';
+  $('f-icon').value = cfg.icon || '';
+  $('f-content').value = cfg.content || '';
+  $('f-footerText').value = (cfg.footer && cfg.footer.text) || '';
+  $('f-icpNum').value = (cfg.icp && cfg.icp.number) || '';
+  $('f-icpUrl').value = (cfg.icp && cfg.icp.url) || '';
+  $('f-gaNum').value = (cfg.ga && cfg.ga.number) || '';
+  $('f-gaUrl').value = (cfg.ga && cfg.ga.url) || '';
+}
+
+/* ================= 侧栏切换 ================= */
+$('sideNav').addEventListener('click', (e) => {
+  const a = e.target.closest('a');
+  if (!a) return;
+  e.preventDefault();
+  switchPanel(a.dataset.panel);
+});
+function switchPanel(name) {
+  document.querySelectorAll('#sideNav a').forEach((a) =>
+    a.classList.toggle('active', a.dataset.panel === name));
+  document.querySelectorAll('.panel').forEach((p) =>
+    p.classList.toggle('active', p.id === 'panel-' + name));
+  if (name === 'preview') refreshPreview();
+}
+
+/* ================= 图片管理 ================= */
+function renderImages() {
+  const grid = $('imgGrid');
+  grid.innerHTML = imageUrls.length
+    ? imageUrls.map((u, i) => `
+      <div class="img-item">
+        <img src="${u}" alt="">
+        <button class="del" title="移除" onclick="removeImage(${i})">✕</button>
+      </div>`).join('')
+    : '<div class="empty">暂无图片，点击下方区域上传</div>';
+}
+window.removeImage = (i) => {
+  const u = imageUrls.splice(i, 1)[0];
+  const name = u.split('/').pop();
+  api('/api/upload/' + encodeURIComponent(name), { method: 'DELETE' }).catch(() => {});
+  renderImages();
+};
+
+function uploadImage(file, cb) {
+  const fd = new FormData();
+  fd.append('image', file);
+  fetch('/api/upload', { method: 'POST', headers: { Authorization: 'Bearer ' + TOKEN }, body: fd })
+    .then((r) => r.json())
+    .then((d) => (d.ok ? cb(d.url) : alert(d.error || '上传失败')))
+    .catch(() => alert('上传失败'));
+}
+
+$('imgUploadZone').addEventListener('click', () => $('imgFile').click());
+$('imgFile').addEventListener('change', (e) => {
+  [...e.target.files].forEach((f) =>
+    uploadImage(f, (url) => { imageUrls.push(url); renderImages(); }));
+  e.target.value = '';
+});
+['dragover', 'dragleave', 'drop'].forEach((ev) =>
+  $('imgUploadZone').addEventListener(ev, (e) => {
+    e.preventDefault();
+    if (ev === 'dragover') e.target.classList.add('active');
+    if (ev === 'dragleave') e.target.classList.remove('active');
+    if (ev === 'drop') [...e.dataTransfer.files].forEach((f) =>
+      uploadImage(f, (url) => { imageUrls.push(url); renderImages(); }));
+  }));
+
+$('iconUploadBtn').addEventListener('click', () => $('iconFile').click());
+$('iconFile').addEventListener('change', (e) => {
+  const f = e.target.files[0];
+  if (f) uploadImage(f, (url) => { $('f-icon').value = url; });
+  e.target.value = '';
+});
+
+/* ================= 页脚链接 ================= */
+function renderLinks() {
+  const list = (cfg.footer && cfg.footer.links) || [];
+  const box = $('linkList');
+  box.innerHTML = list.length
+    ? list.map((l, i) => `
+      <div class="link-row">
+        <input type="text" class="lk-label" value="${(l.label || '').replace(/"/g, '&quot;')}" placeholder="链接文字">
+        <input type="text" class="lk-url" value="${(l.url || '').replace(/"/g, '&quot;')}" placeholder="https://...">
+        <button class="btn btn-danger" onclick="removeLink(${i})">删除</button>
+      </div>`).join('')
+    : '<div class="empty">暂无链接，点击「添加链接」创建</div>';
+}
+window.removeLink = (i) => {
+  cfg.footer.links.splice(i, 1);
+  renderLinks();
+};
+$('addLinkBtn').addEventListener('click', () => {
+  if (!cfg.footer) cfg.footer = { text: '', links: [] };
+  cfg.footer.links.push({ label: '', url: '' });
+  renderLinks();
+  const rows = $('linkList').querySelectorAll('.link-row');
+  rows[rows.length - 1].querySelector('input').focus();
+});
+
+/* ================= 主题 ================= */
+function renderThemes() {
+  const grid = $('themeGrid');
+  grid.innerHTML = Object.entries(themes).map(([key, t]) => `
+    <div class="theme-opt ${cfg.theme === key ? 'active' : ''}" onclick="pickTheme('${key}')">
+      <div class="theme-swatch" style="background:linear-gradient(135deg,${t.primary},${t.primaryDark})"></div>
+      <div class="tname">${t.name}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px">
+        <span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${t.bg};border:1px solid #ddd;vertical-align:middle"></span>
+        ${t.bg}
+      </div>
+    </div>`).join('');
+}
+window.pickTheme = async (key) => {
+  try {
+    const d = await api('/api/config', { method: 'PUT', body: JSON.stringify({ theme: key }) });
+    cfg = d.config;
+    renderThemes();
+    flash('st-content');
+  } catch (err) { alert(err.message); }
+};
+
+/* ================= 保存 ================= */
+function flash(id) {
+  const el = $(id);
+  if (!el) return;
+  el.textContent = '✅ 已保存 ' + new Date().toLocaleTimeString();
+  setTimeout(() => (el.textContent = ''), 2500);
+}
+window.saveSection = async (name) => {
+  const body = {};
+  if (name === 'basic') {
+    body.title = $('f-title').value.trim();
+    body.logoText = $('f-logoText').value.trim();
+    body.icon = $('f-icon').value.trim();
+  } else if (name === 'content') {
+    body.content = $('f-content').value;
+  } else if (name === 'images') {
+    body.images = imageUrls;
+  } else if (name === 'footer') {
+    const links = [...$('linkList').querySelectorAll('.link-row')].map((r) => ({
+      label: r.querySelector('.lk-label').value.trim(),
+      url: r.querySelector('.lk-url').value.trim(),
+    })).filter((l) => l.label || l.url);
+    body.footer = { text: $('f-footerText').value.trim(), links };
+  } else if (name === 'filing') {
+    body.icp = { number: $('f-icpNum').value.trim(), url: $('f-icpUrl').value.trim() };
+    body.ga = { number: $('f-gaNum').value.trim(), url: $('f-gaUrl').value.trim() };
+  }
+  try {
+    const d = await api('/api/config', { method: 'PUT', body: JSON.stringify(body) });
+    cfg = d.config;
+    fillForms();
+    flash('st-' + name);
+  } catch (err) { alert(err.message); }
+};
+
+/* ================= 预览 ================= */
+function refreshPreview() {
+  $('previewFrame').src = '/?t=' + Date.now() + '&preview=1';
+}
+$('previewBtn').addEventListener('click', refreshPreview);
+
+/* ================= 修改密码 ================= */
+$('passForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = $('passMsg');
+  if ($('newPass').value !== $('newPass2').value) {
+    msg.className = 'msg err'; msg.textContent = '两次输入的新密码不一致'; return;
+  }
+  try {
+    await api('/api/auth/password', {
+      method: 'PUT',
+      body: JSON.stringify({ oldPassword: $('oldPass').value, newPassword: $('newPass').value }),
+    });
+    msg.className = 'msg ok'; msg.textContent = '✅ 密码修改成功，下次登录请使用新密码';
+    e.target.reset();
+  } catch (err) {
+    msg.className = 'msg err'; msg.textContent = err.message;
+  }
+});
+
+/* ================= 启动 ================= */
+if (TOKEN) {
+  api('/api/config').then(loadAll).catch(() => {});
+}
+</script>
+</body>
+</html>

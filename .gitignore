@@ -1,0 +1,21 @@
+# 依赖
+node_modules/
+
+# 打包产物
+*.zip
+*.tar.gz
+*.tgz
+
+# 日志
+*.log
+
+# 运行时生成的用户上传内容
+uploads/*
+!uploads/.gitkeep
+
+# 密钥与敏感数据（首次运行自动生成）
+data/secret.json
+
+# 系统文件
+.DS_Store
+Thumbs.db
