@@ -116,8 +116,7 @@ function defaultConfig() {
     content: '欢迎访问本网站。\n\n本页面用于展示ICP备案信息核验结果。',
     images: [],
     footer: { text: 'Copyright © 2026 我的网站 版权所有', links: [] },
-    icp: { number: '京ICP备00000000号', url: 'https://beian.miit.gov.cn/' },
-    ga: { number: '', url: 'https://www.beian.gov.cn/' },
+
     updatedAt: new Date().toISOString(),
   };
 }
@@ -125,8 +124,6 @@ function saveConfig(partial) {
   const cfg = getConfig();
   const next = { ...cfg, ...partial };
   if (partial.footer) next.footer = { ...cfg.footer, ...partial.footer };
-  if (partial.icp) next.icp = { ...cfg.icp, ...partial.icp };
-  if (partial.ga) next.ga = { ...cfg.ga, ...partial.ga };
   // 为 text 类型链接分配/保持稳定 id（/page/:id 静态页依赖）
   if (next.footer && Array.isArray(next.footer.links)) {
     next.footer.links = next.footer.links.map((l) => {

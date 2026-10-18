@@ -6,19 +6,19 @@
   "content": "欢迎访问本网站。\n\n本页面用于展示ICP备案信息核验结果。",
   "images": [],
   "footer": {
-    "text": "Copyright (c) 2026 我的网站 版权所有",
+    "text": "Copyright © 2026 我的网站 版权所有",
     "links": [
       {
         "type": "text",
         "label": "关于我们",
-        "text": "我们是一家专注于互联网服务的公司，成立于2020年，总部位于北京。",
-        "id": "bdc0c6e3"
+        "text": "我们是一家专注于互联网服务的公司，成立于2020年，总部位于北京。\n\n公司致力于为用户提供安全、合规、优质的网络服务。",
+        "id": "61731f34"
       },
       {
         "type": "text",
         "label": "联系我们",
-        "text": "联系邮箱：contact@example.com",
-        "id": "0ddd83fc"
+        "text": "联系邮箱：contact@example.com\n联系电话：010-12345678\n办公地址：北京市朝阳区XX路XX号",
+        "id": "196e4722"
       },
       {
         "type": "link",
@@ -27,14 +27,5 @@
       }
     ]
   },
-  "icp": {
-    "number": "京ICP备12345678号",
-    "url": "https://beian.miit.gov.cn/"
-  },
-  "ga": {
-    "number": "京公安备12345678号",
-    "url": "https://www.beian.gov.cn/"
-  },
-  "createdAt": "2026-10-17T12:00:00.000Z",
-  "updatedAt": "2026-10-18T07:40:42.647Z"
+  "updatedAt": "2026-10-18T08:20:32.381Z"
 }

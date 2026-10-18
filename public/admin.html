@@ -93,14 +93,25 @@ a{color:var(--primary);text-decoration:none}
 .upload-zone:hover{border-color:var(--primary);background:#eef2ff;color:var(--primary)}
 .upload-zone .up-icon{font-size:30px;margin-bottom:6px}
 
-/* 页脚链接 */
-.link-row{display:flex;gap:10px;margin-bottom:10px;align-items:center}
-.link-row input{flex:1;min-width:0}
-.link-row select{flex:none;width:96px;padding:8px 10px}
-.link-row .lk-text{flex:1.4;padding:12px 12px;font-size:12px;color:var(--muted);cursor:pointer}
-.link-row .btn-danger{flex:none}
-.text-editor{margin:-4px 0 12px 106px}
-.text-editor textarea{width:100%;min-height:90px;font-size:13px}
+/* 页脚条目 */
+.link-list{display:flex;flex-direction:column;gap:10px}
+.link-card{border:1.5px solid var(--border);border-radius:11px;padding:12px;background:#fafbfd;transition:border-color .2s,box-shadow .2s}
+.link-card:hover{border-color:#c7d2fe;box-shadow:0 2px 10px rgba(79,70,229,.07)}
+.link-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.link-row input[type=text],.link-row select{height:38px;padding:0 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13.5px;outline:none;background:#fff;color:var(--text);font-family:inherit;transition:border-color .2s,box-shadow .2s}
+.link-row input[type=text]:focus,.link-row select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.12)}
+.link-row .lk-type{flex:none;width:106px;cursor:pointer}
+.link-row .lk-label,#panel-footer .link-row .lk-main{flex:1;min-width:150px}
+.link-row .lk-text{color:var(--muted);background:#f1f5f9;cursor:text}
+.link-btn{flex:none;height:38px;padding:0 14px;border-radius:9px;border:1.5px solid var(--border);font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:inherit;transition:all .15s;background:#fff}
+.link-btn.edit{color:var(--text)}
+.link-btn.edit:hover{border-color:var(--primary);color:var(--primary);background:#eef2ff}
+.link-btn.del{border-color:#fecaca;color:var(--err);background:#fff7f7}
+.link-btn.del:hover{background:var(--err);color:#fff;border-color:var(--err)}
+.text-editor{margin-top:11px}
+.text-editor .te-hint{font-size:12px;color:var(--muted);margin-bottom:6px}
+.text-editor textarea{width:100%;min-height:96px;padding:11px 14px;border:1.5px solid var(--border);border-radius:9px;font-size:13.5px;line-height:1.7;outline:none;font-family:inherit;color:var(--text);resize:vertical;transition:border-color .2s,box-shadow .2s}
+.text-editor textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.12)}
 .empty{color:var(--muted);font-size:13px;text-align:center;padding:14px}
 
 /* 预览 */
@@ -161,7 +172,6 @@ a{color:var(--primary);text-decoration:none}
       <a href="#content" data-panel="content">📄 正文内容</a>
       <a href="#images" data-panel="images">🖼️ 图片管理</a>
       <a href="#footer" data-panel="footer">🔗 页脚与超链接</a>
-      <a href="#filing" data-panel="filing">✅ 备案信息</a>
       <a href="#theme" data-panel="theme">🎨 主题设置</a>
       <a href="#preview" data-panel="preview">👁️ 实时预览</a>
       <a href="#security" data-panel="security">🔒 安全设置</a>
@@ -243,32 +253,6 @@ a{color:var(--primary);text-decoration:none}
         <div class="toolbar">
           <span class="save-status" id="st-footer"></span>
           <button class="btn btn-primary btn-sm" onclick="saveSection('footer')">💾 保存设置</button>
-        </div>
-      </section>
-
-      <!-- 备案信息 -->
-      <section class="panel" id="panel-filing">
-        <h2>备案信息</h2>
-        <p class="desc">备案号等备案信息不再于前台单独展示；如需在页面显示备案号，请直接在「页脚与超链接 → 页脚文字」中填写，或添加为页脚条目。</p>
-        <div class="field">
-          <label>ICP 备案号</label>
-          <input type="text" id="f-icpNum" placeholder="如：京ICP备12345678号">
-        </div>
-        <div class="field">
-          <label>ICP 备案查询链接</label>
-          <input type="text" id="f-icpUrl" placeholder="https://beian.miit.gov.cn/">
-        </div>
-        <div class="field">
-          <label>公安备案号（留空则前台不显示）</label>
-          <input type="text" id="f-gaNum" placeholder="如：京公网安备11010802012345号">
-        </div>
-        <div class="field">
-          <label>公安备案查询链接</label>
-          <input type="text" id="f-gaUrl" placeholder="https://www.beian.gov.cn/">
-        </div>
-        <div class="toolbar">
-          <span class="save-status" id="st-filing"></span>
-          <button class="btn btn-primary btn-sm" onclick="saveSection('filing')">💾 保存设置</button>
         </div>
       </section>
 
@@ -391,10 +375,6 @@ function fillForms() {
   $('f-icon').value = cfg.icon || '';
   $('f-content').value = cfg.content || '';
   $('f-footerText').value = (cfg.footer && cfg.footer.text) || '';
-  $('f-icpNum').value = (cfg.icp && cfg.icp.number) || '';
-  $('f-icpUrl').value = (cfg.icp && cfg.icp.url) || '';
-  $('f-gaNum').value = (cfg.ga && cfg.ga.number) || '';
-  $('f-gaUrl').value = (cfg.ga && cfg.ga.url) || '';
 }
 
 /* ================= 侧栏切换 ================= */
@@ -405,6 +385,7 @@ $('sideNav').addEventListener('click', (e) => {
   switchPanel(a.dataset.panel);
 });
 function switchPanel(name) {
+  if (!document.getElementById('panel-' + name)) name = 'basic';
   document.querySelectorAll('#sideNav a').forEach((a) =>
     a.classList.toggle('active', a.dataset.panel === name));
   document.querySelectorAll('.panel').forEach((p) =>
@@ -471,30 +452,38 @@ function renderLinks() {
   if (!cfg.footer) cfg.footer = { text: '', links: [] };
   const list = cfg.footer.links;
   const box = $('linkList');
-  box.innerHTML = list.length
-    ? list.map((l, i) => {
-        const isText = l.type === 'text';
-        const second = isText
-          ? `<input type="text" class="lk-text" value="${escA(l.text)}" placeholder="点击「编辑文字」填写展示内容" readonly>
-             <button class="btn btn-outline btn-sm" style="flex:none" onclick="toggleTextEditor(${i})">编辑文字</button>`
-          : `<input type="text" class="lk-url" value="${escA(l.url)}" placeholder="https://..." oninput="cfg.footer.links[${i}].url=this.value">`;
-        const editor = isText
-          ? `<div class="text-editor" id="tx-${i}" style="display:none">
-               <textarea placeholder="填写在新页面中展示的文字内容，支持空行分段…">${escA(l.text)}</textarea>
-             </div>`
-          : '';
-        return `
+  if (!list.length) {
+    box.innerHTML = '<div class="empty">暂无条目，点击「添加条目」创建</div>';
+    return;
+  }
+  box.innerHTML = '<div class="link-list">' + list.map((l, i) => {
+    const isText = l.type === 'text';
+    const preview = escA(String(l.text || '').replace(/\s*\n+\s*/g, ' '));
+    const second = isText
+      ? `<input type="text" class="lk-text lk-main" value="${preview}" placeholder="点击右侧「编辑文字」填写展示内容" readonly onclick="openTextEditor(${i})">
+         <button type="button" class="link-btn edit" onclick="toggleTextEditor(${i})">✎ 编辑文字</button>`
+      : `<input type="text" class="lk-url lk-main" value="${escA(l.url)}" placeholder="链接地址 https://..." oninput="cfg.footer.links[${i}].url=this.value">`;
+    const editor = isText
+      ? `<div class="text-editor" id="tx-${i}" style="display:none">
+           <div class="te-hint">在新页面中展示的文字内容，空行表示分段：</div>
+           <textarea placeholder="例如：我们是一家专注于互联网服务的公司……">${escA(l.text)}</textarea>
+         </div>`
+      : '';
+    return `<div class="link-card">
       <div class="link-row">
         <select class="lk-type" onchange="changeLinkType(${i}, this.value)">
-          <option value="link" ${!isText ? 'selected' : ''}>超链接</option>
-          <option value="text" ${isText ? 'selected' : ''}>静态文字</option>
+          <option value="link" ${!isText ? 'selected' : ''}>🔗 超链接</option>
+          <option value="text" ${isText ? 'selected' : ''}>📄 静态文字</option>
         </select>
-        <input type="text" class="lk-label" value="${escA(l.label)}" placeholder="显示名称，如：关于我们" autofocus oninput="cfg.footer.links[${i}].label=this.value">
+        <input type="text" class="lk-label" value="${escA(l.label)}" placeholder="显示名称，如：关于我们" oninput="cfg.footer.links[${i}].label=this.value">
         ${second}
-        <button class="btn btn-danger" onclick="removeLink(${i})">删除</button>
-      </div>${editor}`;
-      }).join('')
-    : '<div class="empty">暂无条目，点击「添加条目」创建</div>';
+        <button type="button" class="link-btn del" onclick="removeLink(${i})">✕ 删除</button>
+      </div>${editor}</div>`;
+  }).join('') + '</div>';
+}
+function openTextEditor(i) {
+  const row = document.getElementById('tx-' + i);
+  if (row && row.style.display === 'none') toggleTextEditor(i);
 }
 window.changeLinkType = (i, type) => {
   const l = cfg.footer.links[i];
@@ -577,9 +566,6 @@ window.saveSection = async (name) => {
       return { type: 'link', label: (l.label || '').trim(), url: (l.url || '').trim() };
     }).filter((l) => l.label || l.url || l.text);
     body.footer = { text: $('f-footerText').value.trim(), links };
-  } else if (name === 'filing') {
-    body.icp = { number: $('f-icpNum').value.trim(), url: $('f-icpUrl').value.trim() };
-    body.ga = { number: $('f-gaNum').value.trim(), url: $('f-gaUrl').value.trim() };
   }
   try {
     const d = await api('/api/config', { method: 'PUT', body: JSON.stringify(body) });
