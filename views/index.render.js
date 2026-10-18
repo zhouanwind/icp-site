@@ -31,14 +31,14 @@ module.exports = function renderIndex(cfg, theme, themes) {
     )
     .join('');
   const linksHtml = (cfg.footer && cfg.footer.links ? cfg.footer.links : [])
-    .map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`)
+    .map((l) => {
+      if (l.type === 'text') {
+        // 静态文字：链接到 /page/:id，点击在新页面展示内容
+        return `<a href="/page/${esc(l.id)}" target="_blank" rel="noopener">${esc(l.label)}</a>`;
+      }
+      return `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`;
+    })
     .join('<span class="sep">|</span>');
-  const gaHtml = cfg.ga && cfg.ga.number
-    ? `<a class="icp-card ga" href="${esc(cfg.ga.url || 'https://www.beian.gov.cn/')}" target="_blank" rel="noopener">
-         <span class="icp-label">公安备案</span>
-         <span class="icp-num">${esc(cfg.ga.number)}</span>
-       </a>`
-    : '';
 
   const themeVars = `
     --primary:${theme.primary};
@@ -107,15 +107,6 @@ main{flex:1;width:100%;max-width:1000px;margin:0 auto;padding:28px 20px 40px}
 .card p{margin-bottom:10px;font-size:15px}
 .card p:last-child{margin-bottom:0}
 
-/* 备案卡片 */
-.icp-row{display:flex;gap:16px;flex-wrap:wrap}
-.icp-card{flex:1;min-width:260px;background:var(--card);border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:var(--radius);padding:18px 22px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}
-.icp-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
-.icp-card.ga{border-left-color:#22c55e}
-.icp-label{font-size:13px;color:var(--muted);letter-spacing:2px}
-.icp-num{font-size:17px;font-weight:700;color:var(--text)}
-.badge-ok{align-self:flex-start;background:rgba(34,197,94,.12);color:#16a34a;font-size:12px;padding:2px 10px;border-radius:999px;margin-top:4px}
-
 /* 图片 */
 .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
 .gallery-item{border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow)}
@@ -158,15 +149,6 @@ footer{background:var(--footer-bg);color:var(--footer-text);padding:26px 20px;te
   <section class="card">
     <h2>网站信息</h2>
     ${renderContent(cfg.content)}
-  </section>
-
-  <section class="icp-row">
-    <a class="icp-card" href="${esc(cfg.icp.url || 'https://beian.miit.gov.cn/')}" target="_blank" rel="noopener">
-      <span class="icp-label">ICP备案号</span>
-      <span class="icp-num">${esc(cfg.icp.number)}</span>
-      <span class="badge-ok">✓ 备案有效</span>
-    </a>
-    ${gaHtml}
   </section>
 
   ${imagesHtml ? `<section class="card">

@@ -94,9 +94,13 @@ a{color:var(--primary);text-decoration:none}
 .upload-zone .up-icon{font-size:30px;margin-bottom:6px}
 
 /* 页脚链接 */
-.link-row{display:flex;gap:10px;margin-bottom:10px}
-.link-row input{flex:1}
+.link-row{display:flex;gap:10px;margin-bottom:10px;align-items:center}
+.link-row input{flex:1;min-width:0}
+.link-row select{flex:none;width:96px;padding:8px 10px}
+.link-row .lk-text{flex:1.4;padding:12px 12px;font-size:12px;color:var(--muted);cursor:pointer}
 .link-row .btn-danger{flex:none}
+.text-editor{margin:-4px 0 12px 106px}
+.text-editor textarea{width:100%;min-height:90px;font-size:13px}
 .empty{color:var(--muted);font-size:13px;text-align:center;padding:14px}
 
 /* 预览 */
@@ -228,14 +232,14 @@ a{color:var(--primary);text-decoration:none}
       <!-- 页脚与超链接 -->
       <section class="panel" id="panel-footer">
         <h2>页脚与超链接</h2>
-        <p class="desc">设置页脚文字（版权信息）以及页脚中的超链接。</p>
+        <p class="desc">设置页脚文字（版权信息）以及页脚条目。条目类型为「超链接」时点击跳转外部地址；类型为「静态文字」时可编辑一段文字内容，点击后在新页面打开显示。</p>
         <div class="field">
           <label>页脚文字（版权 / 落款）</label>
           <input type="text" id="f-footerText" maxlength="120" placeholder="Copyright © 2026 我的网站 版权所有">
         </div>
-        <label style="font-size:13px;color:var(--muted);display:block;margin:14px 0 8px">页脚超链接列表</label>
+        <label style="font-size:13px;color:var(--muted);display:block;margin:14px 0 8px">页脚条目列表（超链接 / 静态文字）</label>
         <div id="linkList"></div>
-        <button class="btn btn-outline btn-sm" id="addLinkBtn">＋ 添加链接</button>
+        <button class="btn btn-outline btn-sm" id="addLinkBtn">＋ 添加条目</button>
         <div class="toolbar">
           <span class="save-status" id="st-footer"></span>
           <button class="btn btn-primary btn-sm" onclick="saveSection('footer')">💾 保存设置</button>
@@ -245,7 +249,7 @@ a{color:var(--primary);text-decoration:none}
       <!-- 备案信息 -->
       <section class="panel" id="panel-filing">
         <h2>备案信息</h2>
-        <p class="desc">填写 ICP 备案号与公安备案号，将展示在前台备案卡片并链接到官方查询页。</p>
+        <p class="desc">备案号等备案信息不再于前台单独展示；如需在页面显示备案号，请直接在「页脚与超链接 → 页脚文字」中填写，或添加为页脚条目。</p>
         <div class="field">
           <label>ICP 备案号</label>
           <input type="text" id="f-icpNum" placeholder="如：京ICP备12345678号">
@@ -457,29 +461,73 @@ $('iconFile').addEventListener('change', (e) => {
   e.target.value = '';
 });
 
-/* ================= 页脚链接 ================= */
+/* ================= 页脚条目（超链接/静态文字） ================= */
+function escA(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 function renderLinks() {
-  const list = (cfg.footer && cfg.footer.links) || [];
+  if (!cfg.footer) cfg.footer = { text: '', links: [] };
+  const list = cfg.footer.links;
   const box = $('linkList');
   box.innerHTML = list.length
-    ? list.map((l, i) => `
+    ? list.map((l, i) => {
+        const isText = l.type === 'text';
+        const second = isText
+          ? `<input type="text" class="lk-text" value="${escA(l.text)}" placeholder="点击「编辑文字」填写展示内容" readonly>
+             <button class="btn btn-outline btn-sm" style="flex:none" onclick="toggleTextEditor(${i})">编辑文字</button>`
+          : `<input type="text" class="lk-url" value="${escA(l.url)}" placeholder="https://..." oninput="cfg.footer.links[${i}].url=this.value">`;
+        const editor = isText
+          ? `<div class="text-editor" id="tx-${i}" style="display:none">
+               <textarea placeholder="填写在新页面中展示的文字内容，支持空行分段…">${escA(l.text)}</textarea>
+             </div>`
+          : '';
+        return `
       <div class="link-row">
-        <input type="text" class="lk-label" value="${(l.label || '').replace(/"/g, '&quot;')}" placeholder="链接文字">
-        <input type="text" class="lk-url" value="${(l.url || '').replace(/"/g, '&quot;')}" placeholder="https://...">
+        <select class="lk-type" onchange="changeLinkType(${i}, this.value)">
+          <option value="link" ${!isText ? 'selected' : ''}>超链接</option>
+          <option value="text" ${isText ? 'selected' : ''}>静态文字</option>
+        </select>
+        <input type="text" class="lk-label" value="${escA(l.label)}" placeholder="显示名称，如：关于我们" autofocus oninput="cfg.footer.links[${i}].label=this.value">
+        ${second}
         <button class="btn btn-danger" onclick="removeLink(${i})">删除</button>
-      </div>`).join('')
-    : '<div class="empty">暂无链接，点击「添加链接」创建</div>';
+      </div>${editor}`;
+      }).join('')
+    : '<div class="empty">暂无条目，点击「添加条目」创建</div>';
 }
+window.changeLinkType = (i, type) => {
+  const l = cfg.footer.links[i];
+  l.type = type;
+  if (type === 'text') { if (l.text == null) l.text = ''; delete l.url; }
+  else { delete l.text; delete l.id; if (l.url == null) l.url = ''; }
+  renderLinks();
+};
+window.toggleTextEditor = (i) => {
+  const row = document.getElementById('tx-' + i);
+  if (!row) return;
+  const open = row.style.display === 'none';
+  row.style.display = open ? 'block' : 'none';
+  if (open) {
+    const ta = row.querySelector('textarea');
+    ta.value = cfg.footer.links[i].text || '';
+    ta.focus();
+    ta.oninput = () => { cfg.footer.links[i].text = ta.value; };
+  } else {
+    cfg.footer.links[i].text = row.querySelector('textarea').value;
+    renderLinks();
+  }
+};
 window.removeLink = (i) => {
   cfg.footer.links.splice(i, 1);
   renderLinks();
 };
 $('addLinkBtn').addEventListener('click', () => {
   if (!cfg.footer) cfg.footer = { text: '', links: [] };
-  cfg.footer.links.push({ label: '', url: '' });
+  cfg.footer.links.push({ type: 'link', label: '', url: '' });
   renderLinks();
   const rows = $('linkList').querySelectorAll('.link-row');
-  rows[rows.length - 1].querySelector('input').focus();
+  rows[rows.length - 1].querySelector('.lk-label').focus();
 });
 
 /* ================= 主题 ================= */
@@ -522,10 +570,12 @@ window.saveSection = async (name) => {
   } else if (name === 'images') {
     body.images = imageUrls;
   } else if (name === 'footer') {
-    const links = [...$('linkList').querySelectorAll('.link-row')].map((r) => ({
-      label: r.querySelector('.lk-label').value.trim(),
-      url: r.querySelector('.lk-url').value.trim(),
-    })).filter((l) => l.label || l.url);
+    const links = (cfg.footer.links || []).map((l) => {
+      if (l.type === 'text') {
+        return { type: 'text', label: (l.label || '').trim(), text: l.text || '', id: l.id };
+      }
+      return { type: 'link', label: (l.label || '').trim(), url: (l.url || '').trim() };
+    }).filter((l) => l.label || l.url || l.text);
     body.footer = { text: $('f-footerText').value.trim(), links };
   } else if (name === 'filing') {
     body.icp = { number: $('f-icpNum').value.trim(), url: $('f-icpUrl').value.trim() };

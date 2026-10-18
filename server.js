@@ -127,6 +127,15 @@ function saveConfig(partial) {
   if (partial.footer) next.footer = { ...cfg.footer, ...partial.footer };
   if (partial.icp) next.icp = { ...cfg.icp, ...partial.icp };
   if (partial.ga) next.ga = { ...cfg.ga, ...partial.ga };
+  // 为 text 类型链接分配/保持稳定 id（/page/:id 静态页依赖）
+  if (next.footer && Array.isArray(next.footer.links)) {
+    next.footer.links = next.footer.links.map((l) => {
+      if (l.type === 'text' && !l.id) {
+        return { ...l, id: crypto.randomBytes(4).toString('hex') };
+      }
+      return l;
+    });
+  }
   next.updatedAt = new Date().toISOString();
   writeJson(CONFIG_FILE, next);
   return next;
@@ -216,19 +225,24 @@ app.delete('/api/upload/:name', authRequired, (req, res) => {
 });
 
 // ---------- 前台首页（服务端渲染，内容来自 config.json） ----------
-function esc(s) {
-  return String(s == null ? '' : s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
 app.get('/', (req, res) => {
   const cfg = getConfig();
   const themes = readJson(THEMES_FILE, { themes: {}, defaultTheme: 'blue' });
   const theme = themes.themes[cfg.theme] || themes.themes[themes.defaultTheme] || themes.themes.blue;
   const html = require('./views/index.render.js')(cfg, theme, themes);
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(html);
+});
+
+// ---------- 静态文字页（/page/:id，如“关于我们”“联系我们”） ----------
+app.get('/page/:id', (req, res) => {
+  const cfg = getConfig();
+  const links = (cfg.footer && cfg.footer.links) || [];
+  const item = links.find((l) => l.type === 'text' && String(l.id) === String(req.params.id));
+  if (!item) return res.status(404).send('404 - 页面不存在');
+  const themes = readJson(THEMES_FILE, { themes: {}, defaultTheme: 'blue' });
+  const theme = themes.themes[cfg.theme] || themes.themes[themes.defaultTheme] || themes.themes.blue;
+  const html = require('./views/page.render.js')(cfg, theme, item);
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(html);
 });
