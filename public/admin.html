@@ -100,7 +100,7 @@ a{color:var(--primary);text-decoration:none}
 .link-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .link-row input[type=text],.link-row select{height:38px;padding:0 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13.5px;outline:none;background:#fff;color:var(--text);font-family:inherit;transition:border-color .2s,box-shadow .2s}
 .link-row input[type=text]:focus,.link-row select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.12)}
-.link-row .lk-type{flex:none;width:106px;cursor:pointer}
+.link-row .lk-type{flex:none;width:150px;cursor:pointer}
 .link-row .lk-label,#panel-footer .link-row .lk-main{flex:1;min-width:150px}
 .link-row .lk-text{color:var(--muted);background:#f1f5f9;cursor:text}
 .link-btn{flex:none;height:38px;padding:0 14px;border-radius:9px;border:1.5px solid var(--border);font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:inherit;transition:all .15s;background:#fff}
@@ -120,7 +120,7 @@ a{color:var(--primary);text-decoration:none}
 .save-status{font-size:13px;color:var(--muted);align-self:center}
 
 /* 前台预览小窗 */
-.mini-preview{width:100%;height:420px;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff}
+.mini-preview{width:100%;height:calc(100vh - 320px);min-height:560px;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff}
 .mini-preview iframe{width:100%;height:100%;border:none}
 
 @media (max-width:860px){
@@ -182,16 +182,20 @@ a{color:var(--primary);text-decoration:none}
       <!-- 基本设置 -->
       <section class="panel" id="panel-basic">
         <h2>基本设置</h2>
-        <p class="desc">设置网站标题（Title）、图标和 Logo 文字。</p>
+        <p class="desc">设置网站标题（Title）、页眉/横幅文字、图标和 Logo 文字。前台展示的所有文字均可在此编辑。</p>
         <div class="row">
           <div class="field">
             <label>网站标题（Title）</label>
-            <input type="text" id="f-title" maxlength="60" placeholder="如：ICP备案核验平台">
+            <input type="text" id="f-title" maxlength="60" placeholder="如：XX管理系统">
           </div>
           <div class="field" style="max-width:160px">
             <label>Logo 文字（无图标时显示）</label>
             <input type="text" id="f-logoText" maxlength="4" placeholder="备">
           </div>
+        </div>
+        <div class="field">
+          <label>横幅大字（可选，显示在页面顶部渐变横幅中，如系统名称 / 版本号；留空则不显示横幅）</label>
+          <input type="text" id="f-subtitle" maxlength="60" placeholder="如：XX管理系统 V1.0">
         </div>
         <div class="field">
           <label>网站图标（URL 或上传）</label>
@@ -212,7 +216,7 @@ a{color:var(--primary);text-decoration:none}
       <!-- 正文内容 -->
       <section class="panel" id="panel-content">
         <h2>正文内容</h2>
-        <p class="desc">编辑前台「网站信息」区域的正文。空行表示分段，单换行会保留为换行。</p>
+        <p class="desc">前台「网站信息」区域的正文，可填写系统名称、版本号、系统简介或公司简介等。空行表示分段，单换行会保留为换行。</p>
         <div class="field">
           <textarea id="f-content" rows="12" placeholder="输入正文内容…"></textarea>
         </div>
@@ -270,7 +274,7 @@ a{color:var(--primary);text-decoration:none}
         <div class="preview-note">💡 请先在各设置页点击「保存」，然后点击下方按钮刷新预览。</div>
         <button class="btn btn-primary btn-sm" id="previewBtn">🔄 刷新预览</button>
         <div style="height:14px"></div>
-        <div class="mini-preview"><iframe id="previewFrame" src="/?t=0"></iframe></div>
+        <div class="mini-preview"><iframe id="previewFrame" src="about:blank"></iframe></div>
       </section>
 
       <!-- 安全设置 -->
@@ -371,6 +375,7 @@ async function loadAll() {
 
 function fillForms() {
   $('f-title').value = cfg.title || '';
+  $('f-subtitle').value = cfg.subtitle || '';
   $('f-logoText').value = cfg.logoText || '';
   $('f-icon').value = cfg.icon || '';
   $('f-content').value = cfg.content || '';
@@ -552,6 +557,7 @@ window.saveSection = async (name) => {
   const body = {};
   if (name === 'basic') {
     body.title = $('f-title').value.trim();
+    body.subtitle = $('f-subtitle').value.trim();
     body.logoText = $('f-logoText').value.trim();
     body.icon = $('f-icon').value.trim();
   } else if (name === 'content') {

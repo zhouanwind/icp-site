@@ -109,11 +109,12 @@ function getConfig() {
 }
 function defaultConfig() {
   return {
-    title: 'ICP备案核验平台',
+    title: '我的网站',
+    subtitle: '',
     icon: '',
-    logoText: '备案',
+    logoText: 'LOGO',
     theme: 'blue',
-    content: '欢迎访问本网站。\n\n本页面用于展示ICP备案信息核验结果。',
+    content: '欢迎访问本网站。\n\n请在后台「正文内容」中填写系统名称、版本号、系统简介或公司简介等信息。',
     images: [],
     footer: { text: 'Copyright © 2026 我的网站 版权所有', links: [] },
 

@@ -19,6 +19,7 @@ function renderContent(content) {
 }
 
 module.exports = function renderIndex(cfg, theme, themes) {
+  const subtitle = String(cfg.subtitle || '').trim();
   const icon = cfg.icon
     ? `<img class="logo-icon" src="${esc(cfg.icon)}" alt="logo">`
     : `<span class="logo-badge">${esc(cfg.logoText || '备')}</span>`;
@@ -58,7 +59,7 @@ module.exports = function renderIndex(cfg, theme, themes) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(cfg.title)}</title>
-<meta name="description" content="${esc(cfg.title)} - ICP备案核验">
+<meta name="description" content="${esc(subtitle || cfg.title)}">
 ${cfg.icon ? `<link rel="icon" href="${esc(cfg.icon)}">` : ''}
 <style>
 @font-face {
@@ -90,16 +91,13 @@ header{background:var(--header-bg);box-shadow:var(--shadow);position:sticky;top:
 .logo-badge{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.15)}
 .logo-icon{width:42px;height:42px;border-radius:10px;object-fit:cover;flex:none}
 .site-title{font-size:20px;font-weight:700;color:var(--text)}
-.site-title small{display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:2px}
 
 /* 主体 */
 main{flex:1;width:100%;max-width:1000px;margin:0 auto;padding:28px 20px 40px}
-.hero{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:#fff;border-radius:var(--radius);padding:40px 32px;margin-bottom:24px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
+.hero{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:#fff;border-radius:var(--radius);padding:34px 32px;margin-bottom:24px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
 .hero::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.12)}
 .hero::before{content:"";position:absolute;right:30px;bottom:-80px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.08)}
-.hero h1{font-size:28px;margin-bottom:10px;position:relative;z-index:1}
-.hero p{opacity:.92;position:relative;z-index:1;font-size:15px}
-.hero .hero-tag{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);padding:4px 14px;border-radius:999px;font-size:13px;margin-bottom:14px;position:relative;z-index:1}
+.hero h1{font-size:26px;position:relative;z-index:1}
 
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:26px 28px;margin-bottom:22px;box-shadow:var(--shadow)}
 .card h2{font-size:18px;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:8px}
@@ -133,18 +131,11 @@ footer{background:var(--footer-bg);color:var(--footer-text);padding:26px 20px;te
 <header>
   <div class="header-inner">
     ${icon}
-    <div class="site-title">
-      ${esc(cfg.title)}
-      <small>ICP备案核验 · ICP Verification</small>
-    </div>
+    <div class="site-title">${esc(cfg.title)}</div>
   </div>
 </header>
 <main>
-  <section class="hero">
-    <span class="hero-tag">已核验</span>
-    <h1>${esc(cfg.title)}</h1>
-    <p>本网站信息已根据《互联网信息服务管理办法》完成ICP备案核验</p>
-  </section>
+  ${subtitle ? `<section class="hero"><h1>${esc(subtitle)}</h1></section>` : ''}
 
   <section class="card">
     <h2>网站信息</h2>
